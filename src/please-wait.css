@@ -1,0 +1,26 @@
+:root {
+    --please_wait_color_start: rgb(128, 64, 255, 0);
+    --please_wait_color_end: rgb(128, 64, 255, 1);
+    --please_wait_width: 200px;
+    --please_wait_height: 25px;
+    --please_wait_speed: 2.5s;
+}
+div.please-wait {
+    width: var(--please_wait_width);
+    height: var(--please_wait_height);
+    border-radius: 20px;
+    overflow-x: hidden;
+    margin: 0 auto;
+}
+div.please-wait div {
+    background: linear-gradient(to right, var(--please_wait_color_start), var(--please_wait_color_end));
+    animation: please-wait var(--please_wait_speed) linear infinite;
+    position: relative;
+    left: calc(var(--please_wait_width) * -1);
+}
+
+@keyframes please-wait {
+    100% {
+        transform: translateX(calc(var(--please_wait_width) * 2));
+    }
+}

@@ -1,0 +1,193 @@
+@import url("please-wait.css");
+
+:root {
+  --display: #340496;
+  --highlight: #8040ff;
+  --box-shadow: #8040ff40;
+  --highlight-pale: #eee9fa;
+  --bold-color: #e72424;
+  --fg: #2f2f2f;
+  --bg: #f1ebfd;
+  --title-fg: #0f0f0f;
+  --title_bg: #d3d3d3;
+  /* --bg: #fff6f6; */
+
+
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  color: var(--fg);
+  background-color: var(--bg);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.titlebar {
+  position: fixed;
+  font-size: xx-large;
+  font-weight: bold;
+  height: 70px;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0.5em;
+  color: var(--title-fg);
+  background-color: var(--title-bg);
+  border-bottom: 2px solid var(--highlight);
+  user-select: none;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.titlebar-button {
+  margin-left: 0.25em;
+}
+
+.titlebar-button svg {
+  stroke: var(--display);
+}
+
+.titlebar-button:hover {
+  background: var(--highlight-pale);
+}
+
+.titlebar div.title {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+}
+
+.container {
+  margin: 0;
+  padding-top: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5em;
+}
+
+input,
+button,
+select {
+  border-radius: 8px;
+  border: 1px solid var(--box-shadow);
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--fg);
+  background-color: var(--bg);
+  transition: border-color 0.25s;
+  box-shadow: 0 2px 2px var(--box-shadow);
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover,
+input:hover,
+select:hover {
+  border-color: var(--highlight);
+}
+
+button:active {
+  border-color: var(--highlight);
+  background-color: var(--highlight-pale);
+}
+
+input,
+button,
+select {
+  outline: none;
+}
+
+#generate-button,
+#compare-button {
+  margin-right: 0.5em;
+}
+
+#prompt-display.bold {
+  font-weight: bold;
+  font-size: x-large;
+  color: var(--bold-color);
+}
+
+#digest-display {
+  font-size: xx-large;
+  line-height: 1;
+  margin: 0.5em 1em;
+}
+
+#digest-file-display {
+  font-size: larger;
+  margin: 0 1em;
+}
+
+#digest-display,
+#digest-file-display {
+  overflow-wrap: break-word;
+  color: var(--display);
+}
+
+.hidden {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: var(--bg);
+    background-color: var(--fg);
+  }
+
+  .titlebar {
+    color: var(--title_bg);
+    background-color: var(--title-fg);
+  }
+
+  input,
+  button,
+  select {
+    color: var(--title_bg);
+    background-color: var(--title-fg);
+    border: 1px solid var(--box-shadow);
+  }
+
+  button:active {
+    background-color: var(--display);
+  }
+
+  select optgroup option {
+    color: var(--title_bg);
+    background-color: var(--title-fg);
+  }
+
+  select optgroup {
+    /* color: #ffffff; */
+    background-color: var(--display);
+  }
+
+  #digest-display,
+  #digest-file-display {
+    overflow-wrap: break-word;
+    color: var(--display-pale);
+  }
+}

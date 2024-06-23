@@ -1,0 +1,24 @@
+[package]
+name = "verify_digest"
+version = "0.0.0"
+description = "A tool to verify file digests"
+authors = ["Paul Sobolik <psobolik@zoho.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1", features = [] }
+
+[dependencies]
+tauri = { version = "1", features = [ "window-hide", "window-show", "window-unmaximize", "window-start-dragging", "window-minimize", "window-unminimize", "window-close", "window-maximize", "shell-open", "dialog"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+md5 = "0.7.0"
+sha1 = "0.10.6"
+sha2 = "0.10.8"
+sha3 = "0.10.8"
+
+[features]
+# This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
