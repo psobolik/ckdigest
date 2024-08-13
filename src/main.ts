@@ -42,8 +42,8 @@ async function generate_digest() {
   await generate_digest_for_file(await invoke("pick_file"));
 }
 
-async function generate_digest_for_file(file: string) {
-  digest_file_display_el().textContent = file;
+async function generate_digest_for_file(file: string | null) {
+  digest_file_display_el().textContent = file ?? "";
   digest_display_el().textContent = "";
   if (file) {
     let digest_function = selected_digest_function();
