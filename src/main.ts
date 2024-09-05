@@ -25,6 +25,10 @@ function generate_button_el(): HTMLButtonElement {
   return document.querySelector("#generate-button") as HTMLButtonElement;
 }
 
+function open_digest_button_el(): HTMLButtonElement {
+  return document.querySelector("#open-digest-button") as HTMLButtonElement;
+}
+
 function compare_button_el(): HTMLButtonElement {
   return document.querySelector("#compare-button") as HTMLButtonElement;
 }
@@ -40,6 +44,13 @@ function selected_digest_function(): string | null {
 
 async function generate_digest() {
   await generate_digest_for_file(await invoke("pick_file"));
+}
+
+async function open_digest() {
+    const file = await invoke("pick_digest_file");
+    if (!file) return;
+
+    console.log(file);
 }
 
 async function generate_digest_for_file(file: string | null) {
@@ -90,6 +101,12 @@ window.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
     prompt_display_el().textContent = "";
     generate_digest().catch(console.error);
+  });
+
+  open_digest_button_el().addEventListener("click", event => {
+    event.preventDefault();
+    prompt_display_el().textContent = "";
+    open_digest().catch(console.error);
   });
 
   digest_select_el().addEventListener("change", () => {
