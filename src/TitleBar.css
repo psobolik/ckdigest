@@ -1,0 +1,45 @@
+.title-bar {
+    --title-color: #0f0f0f;
+    --title-background-color: #eee9fa;
+    --hover-color: #eee;
+
+    font-size: larger;
+    font-weight: bold;
+    padding: 0.25em 0.5em;
+    color: var(--title-color);
+    background-color: var(--title-background-color);
+    border-bottom: 2px solid var(--highlight);
+    user-select: none;
+    display: flex;
+    align-items: center;
+}
+
+.title-bar-button {
+    padding: 0.25em 0.25em 0;
+}
+
+.title-bar-button svg {
+    stroke: var(--title-color);
+    fill: var(--title-color);
+    height: 1em;
+    width: 1em;
+}
+.title-bar-button:hover {
+    background: var(--highlight);
+}
+.title-bar-button:hover svg {
+    stroke: var(--hover-color);
+    fill: var(--hover-color);
+}
+
+.title-bar div.title {
+    text-align: start;
+    flex: content;
+}
+
+@media (prefers-color-scheme: dark) {
+    .title-bar {
+        --title-color: #eee9fa;
+        --title-background-color: #0f0f0f;
+    }
+}

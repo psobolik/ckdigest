@@ -3,8 +3,7 @@
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
     "devPath": "http://localhost:1420",
-    "distDir": "../dist",
-    "withGlobalTauri": true
+    "distDir": "../dist"
   },
   "package": {
     "productName": "Verify Digest",
@@ -27,14 +26,17 @@
         "unmaximize": true,
         "unminimize": true,
         "startDragging": true
+      },
+      "dialog": {
+        "message": true
       }
     },
     "windows": [
       {
         "decorations": false,
         "title": "Verify Digest",
-        "width": 800,
-        "height": 600,
+        "width": 550,
+        "height": 550,
         "minWidth": 550,
         "minHeight": 550
       }
@@ -45,7 +47,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "psobolik.ckdigest",
+      "identifier": "verify-digest.psobolik",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",

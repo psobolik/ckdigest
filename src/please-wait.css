@@ -1,7 +1,7 @@
 :root {
     --please_wait_color_start: rgb(128, 64, 255, 0);
     --please_wait_color_end: rgb(128, 64, 255, 1);
-    --please_wait_width: 200px;
+    --please_wait_width: 50vw;
     --please_wait_height: 25px;
     --please_wait_speed: 2.5s;
 }

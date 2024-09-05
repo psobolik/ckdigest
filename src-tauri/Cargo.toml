@@ -1,6 +1,6 @@
 [package]
-name = "verify_digest"
-version = "0.0.0"
+name = "verify-digest"
+version = "0.1.0"
 description = "A tool to verify file digests"
 authors = ["Paul Sobolik <psobolik@zoho.com>"]
 edition = "2021"
@@ -11,13 +11,14 @@ edition = "2021"
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = [ "window-hide", "window-show", "window-unmaximize", "window-start-dragging", "window-minimize", "window-unminimize", "window-close", "window-maximize", "shell-open", "dialog"] }
+tauri = { version = "1", features = [ "dialog-message", "window-minimize", "window-start-dragging", "window-hide", "window-maximize", "window-unmaximize", "window-unminimize", "window-close", "window-show", "shell-open", "dialog"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 md5 = "0.7.0"
 sha1 = "0.10.6"
 sha2 = "0.10.8"
 sha3 = "0.10.8"
+regex = "1.10.6"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
