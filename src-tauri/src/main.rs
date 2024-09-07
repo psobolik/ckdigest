@@ -8,6 +8,7 @@ use std::path::{Path, PathBuf};
 use tauri::api::dialog::blocking::FileDialogBuilder;
 use tauri::regex::Regex;
 
+mod error;
 mod hash_function;
 
 struct ProcessDigestFileParts {
@@ -41,14 +42,11 @@ async fn pick_digest_file() -> Option<PathBuf> {
 }
 
 #[tauri::command]
-async fn parse_digest_file(digest_file: PathBuf) -> Result<DigestFileParts, String> {
-    fn full_file_path(path: &PathBuf, file_name: String) -> Result<PathBuf, String> {
+async fn parse_digest_file(digest_file: PathBuf) -> Result<DigestFileParts, error::Error> {
+    fn full_file_path(path: &PathBuf, file_name: String) -> Result<PathBuf, error::Error> {
         let mut file = path.clone();
         file.set_file_name(file_name.as_str());
-        match fs::canonicalize(file) {
-            Ok(result) => Ok(result),
-            Err(error) => Err(format!("Invalid file in digest file: {}", error)),
-        }
+        Ok(fs::canonicalize(file)?)
     }
     let line = read_line(&digest_file)?;
     let parts = parse_line(&line)?;
@@ -65,7 +63,7 @@ async fn parse_digest_file(digest_file: PathBuf) -> Result<DigestFileParts, Stri
 async fn calculate_digest(
     path_buf: PathBuf,
     hash_function: HashFunction,
-) -> Result<String, ()> {
+) -> Result<String, error::Error> {
     HashFunction::compute_digest(path_buf, hash_function)
 }
 
@@ -81,29 +79,26 @@ fn main() {
         .expect("error while running tauri application");
 }
 
-fn hash_function(algorithm: String) -> Result<HashFunction, String> {
+fn hash_function(algorithm: String) -> Result<HashFunction, error::Error> {
     match HashFunction::try_from(algorithm) {
         Ok(hash_function) => Ok(hash_function),
-        Err(_) => Err("Invalid algorithm in digest file".to_string()),
+        Err(_) => Err(error::Error::other("Invalid algorithm in digest file")),
     }
 }
 
-fn read_line<P>(filename: P) -> Result<String, String>
+fn read_line<P>(filename: P) -> Result<String, error::Error>
 where
     P: AsRef<Path>,
 {
-    match fs::read_to_string(filename) {
-        Ok(string) => {
-            let lines: Vec<String> = string.lines().map(String::from).collect();
-            match lines.len() {
-                0 => Ok("".to_string()),
-                _ => Ok(lines[0].clone()),
-            }
-        }
-        Err(error) => Err(format!("Error reading digest file: {}", error)),
+    let string = fs::read_to_string(filename)?;
+    let lines: Vec<String> = string.lines().map(String::from).collect();
+    match lines.len() {
+        0 => Ok("".to_string()),
+        _ => Ok(lines[0].clone()),
     }
 }
-fn parse_line(line: &str) -> Result<ProcessDigestFileParts, String> {
+
+fn parse_line(line: &str) -> Result<ProcessDigestFileParts, error::Error> {
     const TAGGED_DIGEST_PATTERN: &str =
         r"^(?<algorithm>.+)\s\((?<filename>.+)\)\s=\s(?<digest>[0-9a-fA-f]+)$";
     let regex = Regex::new(TAGGED_DIGEST_PATTERN).expect("Invalid regular expression");
@@ -120,9 +115,9 @@ fn parse_line(line: &str) -> Result<ProcessDigestFileParts, String> {
                 digest: digest.as_str().to_string(),
             })
         } else {
-            Err("Missing data in digest file".to_string())
+            Err(error::Error::other("Missing data in digest file"))
         }
     } else {
-        Err("Invalid data in digest file".to_string())
+        Err(error::Error::other("Invalid data in digest file"))
     }
 }
