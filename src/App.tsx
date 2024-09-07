@@ -1,7 +1,7 @@
-import {invoke} from "@tauri-apps/api/tauri";
 import React from "react";
 import "./App.css";
 import TitleBar from "./TitleBar.tsx";
+import Tauri from "./tauri.ts";
 
 const App: React.FunctionComponent = () => {
     const [digest, setDigest] = React.useState<string>("");
@@ -39,10 +39,7 @@ const App: React.FunctionComponent = () => {
         setLoading(true);
         setDigest("");
         setDigestedFile(file);
-        invoke("calculate_digest", {
-            pathBuf: file,
-            hashFunction: algorithm
-        }).then(setDigest);
+        Tauri.calculateDigest(file, algorithm).then(setDigest)
     }
 
     function compareDigests() {
@@ -68,29 +65,25 @@ const App: React.FunctionComponent = () => {
     }
 
     async function generateDigest(_e: React.MouseEvent) {
-        invoke("pick_file")
+        Tauri.pickFile()
             .then((file: string | null) => {
                 if (file) calculateDigest(file, algorithm).then()
             })
     }
 
     async function openDigestFile(_e: React.MouseEvent) {
-        invoke("pick_digest_file")
-            .then(digest_file => {
-                if (digest_file === null) return;
-                invoke("parse_digest_file", { digestFile: digest_file })
-                    .then(digest_file_parts => {
-                        // setDigest("");
-                        setMessage("");
-                        setMatch("");
-                        setDigestedFile("");
-                        setExpectedDigest(digest_file_parts.digest);
-                        calculateDigest(digest_file_parts.file, digest_file_parts.algorithm);
-                        setAlgorithm(digest_file_parts.algorithm);
-                    })
-                    .catch(alert)
+        const digest_file = await Tauri.pickDigestFile().catch(console.error);
+        if (!digest_file) return;
+        Tauri.parseDigestFile(digest_file)
+            .then(digestFileParts => {
+                setMessage("");
+                setMatch("");
+                setDigestedFile("");
+                setExpectedDigest(digestFileParts.digest);
+                calculateDigest(digestFileParts.file, digestFileParts.algorithm);
+                setAlgorithm(digestFileParts.algorithm);
             })
-            .catch(alert)
+            .catch(alert);
     }
 
     function clear(_e: React.MouseEvent) {
@@ -101,8 +94,7 @@ const App: React.FunctionComponent = () => {
         setMatch("");
     }
 
-    return (
-        <>
+    return (<>
             <div className="container">
                 <TitleBar/>
                 <div id="control-container">
@@ -146,16 +138,13 @@ const App: React.FunctionComponent = () => {
                         />
                         <button id="compare-button" onClick={compareDigests}>Compare</button>
                     </div>
-                    <p id="message-display" className={
-                        match ? "match" : message ? "message" : ""
-                    }>{match}{message}</p>
+                    <p id="message-display" className={match ? "match" : message ? "message" : ""}>{match}{message}</p>
                     <div className="row">
                         <button id="clear-button" onClick={clear}>Clear</button>
                     </div>
                 </div>
             </div>
-        </>
-    );
+        </>);
 }
 
 export default App;
