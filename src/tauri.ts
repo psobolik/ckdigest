@@ -24,4 +24,11 @@ export default class Tauri {
     static parseDigestFile = (digestFile: string): Promise<DigestFileParts> => {
         return invoke("parse_digest_file", {digestFile: digestFile});
     }
+    static saveDigestFile = (digest: string, digestedFile: string, hashFunction: string): Promise<string> => {
+        return invoke("save_digest_file", {
+            digestedFile,
+            hashFunction,
+            digest
+        });
+    }
 }

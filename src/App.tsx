@@ -86,6 +86,15 @@ const App: React.FunctionComponent = () => {
             .catch(err => alert(err.message));
     }
 
+    async function saveDigestFile(_e: React.MouseEvent) {
+        if (!(digest && digestedFile && algorithm)) return;
+
+        Tauri.saveDigestFile(digest, digestedFile, algorithm)
+            .then(saved => {
+                if (saved) alert(`Saved "${saved}"`)
+            })
+    }
+
     function clear(_e: React.MouseEvent) {
         setDigest("");
         setDigestedFile("");
@@ -106,6 +115,7 @@ const App: React.FunctionComponent = () => {
                 <div className="row">
                     <button id="generate-button" onClick={generateDigest}>Select File</button>
                     <button id="open-digest-button" onClick={openDigestFile}>Select Digest File</button>
+                    <button id="save-digest-button" onClick={saveDigestFile} disabled={!(digest && digestedFile && algorithm)}>Save Digest File</button>
                 </div>
                 <div className="row">
                     <label htmlFor="digest-select">Algorithm</label>

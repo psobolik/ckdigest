@@ -3,7 +3,9 @@
 
 use self::hash_function::HashFunction;
 use serde::Serialize;
+use std::ffi::OsString;
 use std::fs;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use tauri::api::dialog::blocking::FileDialogBuilder;
 use tauri::regex::Regex;
@@ -34,7 +36,10 @@ async fn pick_digest_file() -> Option<PathBuf> {
     FileDialogBuilder::new()
         .add_filter(
             "Digest Files",
-            &["md5", "sha1", "sha224", "sha256", "sha384", "sha512"],
+            &[
+                "md5", "MD5", "sha1", "SHA1", "sha224", "SHA224", "sha256", "SHA256", "sha384",
+                "SHA384", "sha512", "SHA512",
+            ],
         )
         .add_filter("Files with any extension", &["*"])
         .set_title("Open digest file")
@@ -60,6 +65,39 @@ async fn parse_digest_file(digest_file: PathBuf) -> Result<DigestFileParts, erro
 }
 
 #[tauri::command]
+async fn save_digest_file(
+    digested_file: PathBuf,
+    hash_function: HashFunction,
+    digest: &str,
+) -> Result<Option<PathBuf>, error::Error> {
+    let algorithm = format!("{}", hash_function);
+    let directory = digested_file.parent().unwrap_or(Path::new("."));
+    let mut file_name = PathBuf::from(
+        digested_file
+            .file_stem()
+            .unwrap_or(OsString::from("digest_file").as_ref()),
+    );
+    file_name.set_extension(&algorithm);
+    if let Some(digest_file) = FileDialogBuilder::new()
+        .set_directory(directory)
+        .set_file_name(file_name.to_string_lossy().as_ref())
+        .save_file()
+    {
+        let text = format!(
+            "{} ({}) = {}",
+            algorithm,
+            digested_file.file_name().unwrap().to_string_lossy(),
+            digest
+        );
+        let mut file = fs::File::create(&digest_file)?;
+        file.write_all(text.as_bytes())?;
+        Ok(Some(digest_file))
+    } else {
+        Ok(None) // User didn't pick a file
+    }
+}
+
+#[tauri::command]
 async fn calculate_digest(
     path_buf: PathBuf,
     hash_function: HashFunction,
@@ -73,7 +111,8 @@ fn main() {
             pick_file,
             pick_digest_file,
             parse_digest_file,
-            calculate_digest
+            calculate_digest,
+            save_digest_file,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

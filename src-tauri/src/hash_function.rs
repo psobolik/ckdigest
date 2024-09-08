@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
@@ -255,5 +256,25 @@ impl TryFrom<String> for HashFunction {
 
             _ => Err(error::Error::new("HashFunction", format!("Invalid hash function: '{}'", value).as_str())),
         }
+    }
+}
+
+impl Display for HashFunction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
+            HashFunction::MD5 => String::from("MD5"),
+            HashFunction::SHA1 => String::from("SHA1"),
+            HashFunction::SHA224 => String::from("SHA224"),
+            HashFunction::SHA256 => String::from("SHA256"),
+            HashFunction::SHA384 => String::from("SHA384"),
+            HashFunction::SHA512 => String::from("SHA512"),
+            HashFunction::SHA512_224 => String::from("SHA512_224"),
+            HashFunction::SHA512_256 => String::from("SHA512_256"),
+            HashFunction::Sha3_224 => String::from("Sha3_224"),
+            HashFunction::Sha3_256 => String::from("Sha3_256"),
+            HashFunction::Sha3_384 => String::from("Sha3_384"),
+            HashFunction::Sha3_512 => String::from("Sha3_512"),
+        };
+        write!(f, "{}", str)
     }
 }
