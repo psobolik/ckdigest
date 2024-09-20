@@ -7,9 +7,9 @@ export interface DigestFileParts {
 }
 
 export default class Tauri {
-    static calculateDigest = (pathBuf: string, hashFunction: string): Promise<string> => {
+    static calculateDigest = (pathBuf: string, algorithm: string): Promise<string> => {
         return invoke("calculate_digest", {
-            pathBuf: pathBuf, hashFunction: hashFunction
+            pathBuf: pathBuf, algorithm: algorithm
         });
     }
     // We could probably use `open` from '@tauri-apps/api/dialog', but this function

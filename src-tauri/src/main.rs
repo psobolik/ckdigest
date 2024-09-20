@@ -14,7 +14,7 @@ mod error;
 mod hash_function;
 
 struct ProcessDigestFileParts {
-    algorithm: String,
+    algorithm: HashFunction,
     file_name: String,
     digest: String,
 }
@@ -34,14 +34,6 @@ async fn pick_file() -> Option<PathBuf> {
 #[tauri::command]
 async fn pick_digest_file() -> Option<PathBuf> {
     FileDialogBuilder::new()
-        .add_filter(
-            "Digest Files",
-            &[
-                "md5", "MD5", "sha1", "SHA1", "sha224", "SHA224", "sha256", "SHA256", "sha384",
-                "SHA384", "sha512", "SHA512",
-            ],
-        )
-        .add_filter("Files with any extension", &["*"])
         .set_title("Open digest file")
         .pick_file()
 }
@@ -56,9 +48,8 @@ async fn parse_digest_file(digest_file: PathBuf) -> Result<DigestFileParts, erro
     let line = read_line(&digest_file)?;
     let parts = parse_line(&line)?;
     let file = full_file_path(&digest_file, parts.file_name)?;
-    let algorithm = hash_function(parts.algorithm)?;
     Ok(DigestFileParts {
-        algorithm,
+        algorithm: parts.algorithm,
         file,
         digest: parts.digest,
     })
@@ -70,14 +61,18 @@ async fn save_digest_file(
     hash_function: HashFunction,
     digest: &str,
 ) -> Result<Option<PathBuf>, error::Error> {
-    let algorithm = format!("{}", hash_function);
     let directory = digested_file.parent().unwrap_or(Path::new("."));
     let mut file_name = PathBuf::from(
         digested_file
             .file_stem()
             .unwrap_or(OsString::from("digest_file").as_ref()),
     );
-    file_name.set_extension(&algorithm);
+    let extension = match hash_function {
+        HashFunction::SHA512_224 => String::from("SHA2-512_224"),
+        HashFunction::SHA512_256 => String::from("SHA2-512_256"),
+        _ => format!("{}", hash_function),
+    };
+    file_name.set_extension(&extension);
     if let Some(digest_file) = FileDialogBuilder::new()
         .set_directory(directory)
         .set_file_name(file_name.to_string_lossy().as_ref())
@@ -85,7 +80,7 @@ async fn save_digest_file(
     {
         let text = format!(
             "{} ({}) = {}",
-            algorithm,
+            hash_function,
             digested_file.file_name().unwrap().to_string_lossy(),
             digest
         );
@@ -100,9 +95,9 @@ async fn save_digest_file(
 #[tauri::command]
 async fn calculate_digest(
     path_buf: PathBuf,
-    hash_function: HashFunction,
+    algorithm: String,
 ) -> Result<String, error::Error> {
-    HashFunction::compute_digest(path_buf, hash_function)
+    HashFunction::compute_digest(path_buf, HashFunction::try_from(algorithm).unwrap_or(HashFunction::MD5))
 }
 
 fn main() {
@@ -116,13 +111,6 @@ fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
-}
-
-fn hash_function(algorithm: String) -> Result<HashFunction, error::Error> {
-    match HashFunction::try_from(algorithm) {
-        Ok(hash_function) => Ok(hash_function),
-        Err(_) => Err(error::Error::other("Invalid algorithm in digest file")),
-    }
 }
 
 fn read_line<P>(filename: P) -> Result<String, error::Error>
@@ -139,7 +127,7 @@ where
 
 fn parse_line(line: &str) -> Result<ProcessDigestFileParts, error::Error> {
     const TAGGED_DIGEST_PATTERN: &str =
-        r"^(?<algorithm>.+)\s\((?<filename>.+)\)\s=\s(?<digest>[0-9a-fA-f]+)$";
+        r"^(?<algorithm>.+?)\s?\((?<filename>.+?)\)\s?=\s(?<digest>[0-9a-fA-f]+)$";
     let regex = Regex::new(TAGGED_DIGEST_PATTERN).expect("Invalid regular expression");
 
     if let Some(captures) = regex.captures(line) {
@@ -149,7 +137,7 @@ fn parse_line(line: &str) -> Result<ProcessDigestFileParts, error::Error> {
             captures.name("digest"),
         ) {
             Ok(ProcessDigestFileParts {
-                algorithm: algorithm.as_str().to_string(),
+                algorithm: HashFunction::try_from(algorithm.as_str().to_string())?,
                 file_name: file_name.as_str().to_string(),
                 digest: digest.as_str().to_string(),
             })

@@ -133,10 +133,10 @@ const App: React.FunctionComponent = () => {
                             <option value="SHA512_256">SHA-512/256</option>
                         </optgroup>
                         <optgroup label="SHA-3">
-                            <option value="Sha3_224">SHA3-224</option>
-                            <option value="Sha3_256">SHA3-256</option>
-                            <option value="Sha3_384">SHA3-384</option>
-                            <option value="Sha3_512">SHA3-512</option>
+                            <option value="SHA3_224">SHA3-224</option>
+                            <option value="SHA3_256">SHA3-256</option>
+                            <option value="SHA3_384">SHA3-384</option>
+                            <option value="SHA3_512">SHA3-512</option>
                         </optgroup>
                     </select>
                 </div>

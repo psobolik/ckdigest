@@ -22,10 +22,10 @@ pub enum HashFunction {
     SHA512_224,
     SHA512_256,
 
-    Sha3_224,
-    Sha3_256,
-    Sha3_384,
-    Sha3_512,
+    SHA3_224,
+    SHA3_256,
+    SHA3_384,
+    SHA3_512,
 }
 
 impl HashFunction {
@@ -41,10 +41,10 @@ impl HashFunction {
             Self::SHA512_224 => Self::compute_sha512_224(path_buf),
             Self::SHA512_256 => Self::compute_sha512_256(path_buf),
 
-            Self::Sha3_224 => Self::compute_sha3_224(path_buf),
-            Self::Sha3_256 => Self::compute_sha3_256(path_buf),
-            Self::Sha3_384 => Self::compute_sha3_384(path_buf),
-            Self::Sha3_512 => Self::compute_sha3_512(path_buf),
+            Self::SHA3_224 => Self::compute_sha3_224(path_buf),
+            Self::SHA3_256 => Self::compute_sha3_256(path_buf),
+            Self::SHA3_384 => Self::compute_sha3_384(path_buf),
+            Self::SHA3_512 => Self::compute_sha3_512(path_buf),
         }
     }
     // Obsolete algorithms
@@ -238,21 +238,43 @@ impl TryFrom<String> for HashFunction {
     type Error = error::Error;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
-        match value.as_str() {
-            "MD5" => Ok(HashFunction::MD5),
-            "SHA1" => Ok(HashFunction::SHA1),
+        match value.to_ascii_uppercase().as_str() {
+            "MD5" => Ok(HashFunction::MD5), // openssl and md5sum
+            "SHA1" => Ok(HashFunction::SHA1), // openssl and shasum
 
-            "SHA224" => Ok(HashFunction::SHA224),
-            "SHA256" => Ok(HashFunction::SHA256),
-            "SHA384" => Ok(HashFunction::SHA384),
-            "SHA512" => Ok(HashFunction::SHA512),
-            "SHA512_224" => Ok(HashFunction::SHA512_224),
-            "SHA512_256" => Ok(HashFunction::SHA512_256),
+            "SHA2-224" => Ok(HashFunction::SHA224), // openssl
+            "SHA224" => Ok(HashFunction::SHA224), // shasum
 
-            "Sha3_224" => Ok(HashFunction::Sha3_224),
-            "Sha3_256" => Ok(HashFunction::Sha3_256),
-            "Sha3_384" => Ok(HashFunction::Sha3_384),
-            "Sha3_512" => Ok(HashFunction::Sha3_512),
+            "SHA2-256" => Ok(HashFunction::SHA256), // openssl
+            "SHA256" => Ok(HashFunction::SHA256), // shasum
+
+            "SHA2-384" => Ok(HashFunction::SHA384), // openssl
+            "SHA384" => Ok(HashFunction::SHA384), // shasum
+
+            "SHA2-512" => Ok(HashFunction::SHA512), // openssl
+            "SHA512" => Ok(HashFunction::SHA512), // shasum
+
+            "SHA2-512/224" => Ok(HashFunction::SHA512_224), // openssl
+            "SHA512/224" => Ok(HashFunction::SHA512_224), // shasum
+            "SHA512_224" => Ok(HashFunction::SHA512_224), // frontend
+
+            "SHA2-512/256" => Ok(HashFunction::SHA512_256), // openssl
+            "SHA512/256" => Ok(HashFunction::SHA512_256), // shasum
+            "SHA512_256" => Ok(HashFunction::SHA512_256), // frontend
+
+            "SHA3-224" => Ok(HashFunction::SHA3_224), // openssl
+            "SHA3_224" => Ok(HashFunction::SHA3_224), // frontend
+
+            "SHA3-256" => Ok(HashFunction::SHA3_256), // openssl
+            "SHA3_256" => Ok(HashFunction::SHA3_256), // frontend
+
+            "SHA3-384" => Ok(HashFunction::SHA3_384), // openssl
+            "SHA3_384" => Ok(HashFunction::SHA3_384), // frontend
+
+            "SHA3-512" => Ok(HashFunction::SHA3_512), // openssl
+            "SHA3_512" => Ok(HashFunction::SHA3_512), // frontend
+
+
 
             _ => Err(error::Error::new("HashFunction", format!("Invalid hash function: '{}'", value).as_str())),
         }
@@ -264,16 +286,16 @@ impl Display for HashFunction {
         let str = match self {
             HashFunction::MD5 => String::from("MD5"),
             HashFunction::SHA1 => String::from("SHA1"),
-            HashFunction::SHA224 => String::from("SHA224"),
-            HashFunction::SHA256 => String::from("SHA256"),
-            HashFunction::SHA384 => String::from("SHA384"),
-            HashFunction::SHA512 => String::from("SHA512"),
-            HashFunction::SHA512_224 => String::from("SHA512_224"),
-            HashFunction::SHA512_256 => String::from("SHA512_256"),
-            HashFunction::Sha3_224 => String::from("Sha3_224"),
-            HashFunction::Sha3_256 => String::from("Sha3_256"),
-            HashFunction::Sha3_384 => String::from("Sha3_384"),
-            HashFunction::Sha3_512 => String::from("Sha3_512"),
+            HashFunction::SHA224 => String::from("SHA2-224"),
+            HashFunction::SHA256 => String::from("SHA2-256"),
+            HashFunction::SHA384 => String::from("SHA2-384"),
+            HashFunction::SHA512 => String::from("SHA2-512"),
+            HashFunction::SHA512_224 => String::from("SHA2-512/224"),
+            HashFunction::SHA512_256 => String::from("SHA2-512/256"),
+            HashFunction::SHA3_224 => String::from("SHA3-224"),
+            HashFunction::SHA3_256 => String::from("SHA3-256"),
+            HashFunction::SHA3_384 => String::from("SHA3-384"),
+            HashFunction::SHA3_512 => String::from("SHA3-512"),
         };
         write!(f, "{}", str)
     }
