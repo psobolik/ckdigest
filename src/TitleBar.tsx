@@ -1,11 +1,27 @@
 import {appWindow} from "@tauri-apps/api/window";
 import "./TitleBar.css"
 import React from "react";
+import Tauri from "./tauri.ts";
 
 const TitleBar: React.FunctionComponent = () => {
+    const [version, setVersion] = React.useState<string>("");
+
+    React.useEffect(() => {
+        let is_setup = false;
+        const setupVersion = async () => {
+            if (!is_setup) {
+                const version = await Tauri.version();
+                setVersion(`v${version}`);
+            }
+        }
+        setupVersion().catch(console.error);
+        return () => {
+            is_setup = true;
+        }
+    })
     return (
         <div data-tauri-drag-region="" className="title-bar">
-            <div data-tauri-drag-region="" className="title">Verify Digest</div>
+            <div data-tauri-drag-region="" className="title">Verify Digest&emsp;<span className={"version"}>{version}</span></div>
             <div className="title-bar-button" id="title-bar-minimize"
                  onClick={() => appWindow.minimize()}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

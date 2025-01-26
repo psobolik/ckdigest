@@ -7,6 +7,9 @@ export interface DigestFileParts {
 }
 
 export default class Tauri {
+    static version = (): Promise<string> => {
+        return invoke("version");
+    }
     static calculateDigest = (pathBuf: string, algorithm: string): Promise<string> => {
         return invoke("calculate_digest", {
             pathBuf: pathBuf, algorithm: algorithm

@@ -27,6 +27,11 @@ struct DigestFileParts {
 }
 
 #[tauri::command]
+fn version() -> String {
+    format!("{}", env!("CARGO_PKG_VERSION"))
+}
+
+#[tauri::command]
 async fn pick_file() -> Option<PathBuf> {
     FileDialogBuilder::new().pick_file()
 }
@@ -103,6 +108,7 @@ async fn calculate_digest(
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
+            version,
             pick_file,
             pick_digest_file,
             parse_digest_file,

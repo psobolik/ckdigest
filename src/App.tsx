@@ -48,7 +48,7 @@ const App: React.FunctionComponent = () => {
         let has_digest = digest.length !== 0;
         let has_expected = expectedDigest.length !== 0;
         if (has_digest && has_expected) {
-            if (digest === expectedDigest) {
+            if (digest.toString().toLowerCase() === expectedDigest.toString().toLowerCase()) {
                 setMatch("Digests match");
             } else {
                 setMessage("Digests do not match");

@@ -37,6 +37,10 @@
     flex: content;
 }
 
+.title-bar .version {
+    font-size: small;
+}
+
 @media (prefers-color-scheme: dark) {
     .title-bar {
         --title-color: #eee9fa;

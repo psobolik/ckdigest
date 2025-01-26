@@ -25,3 +25,12 @@ Runs `tsc` to compile the TypeScript,
 Tauri also creates installers for the app into subdirectories of `target/release/bundle`.  
 
 On Windows, the executable is `.\src-tauri\target\release\svg-symbol-tool.exe`, and the installers go in `.\src-tauri\target\release\bundle`.
+On Linux, the executable is `./src-tauri/target/release/verify-digest`, and the installers are in 
+* `./src-tauri/target/release/bundle/deb/verify-digest_0.1.1_amd64.deb`
+* `./src-tauri/target/release/bundle/rpm/verify-digest-0.1.1-1.x86_64.rpm`
+* `.src-tauri/target/release/bundle/appimage/verify-digest_0.1.1_amd64.AppImage`
+
+# Version
+* `./src-tauri/Cargo.toml`
+* `./src-tauri/tauri.conf.json`
+* `package.json`
