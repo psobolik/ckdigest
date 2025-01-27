@@ -35,6 +35,8 @@ On Linux, the executable is `./src-tauri/target/release/verify-digest`, and the 
 * `./src-tauri/target/release/bundle/rpm/verify-digest-0.1.1-1.x86_64.rpm`
 * `.src-tauri/target/release/bundle/appimage/verify-digest_0.1.1_amd64.AppImage`
 
+On macOS, the executable is `./src-tauri/target/release/bundle/macos/Verify Digest.app`, and the installer is `./src-tauri/target/release/bundle/dmg/Verify Digest_0.1.1_x64.dmg` 
+
 # Version
 * `./src-tauri/Cargo.toml`
 * `./src-tauri/tauri.conf.json`
