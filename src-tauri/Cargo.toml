@@ -1,6 +1,6 @@
 [package]
 name = "verify-digest"
-version = "0.1.1"
+version = "0.1.2"
 description = "A tool to verify file digests"
 authors = ["Paul Sobolik <psobolik@zoho.com>"]
 edition = "2021"

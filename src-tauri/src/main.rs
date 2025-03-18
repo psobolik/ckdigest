@@ -28,7 +28,7 @@ struct DigestFileParts {
 
 #[tauri::command]
 fn version() -> String {
-    format!("{}", env!("CARGO_PKG_VERSION"))
+    String::from(env!("CARGO_PKG_VERSION"))
 }
 
 #[tauri::command]
@@ -45,9 +45,8 @@ async fn pick_digest_file() -> Option<PathBuf> {
 
 #[tauri::command]
 async fn parse_digest_file(digest_file: PathBuf) -> Result<DigestFileParts, error::Error> {
-    fn full_file_path(path: &PathBuf, file_name: String) -> Result<PathBuf, error::Error> {
-        let mut file = path.clone();
-        file.set_file_name(file_name.as_str());
+    fn full_file_path(path: &Path, file_name: String) -> Result<PathBuf, error::Error> {
+        let file = path.with_file_name(file_name);
         Ok(fs::canonicalize(file)?)
     }
     let line = read_line(&digest_file)?;
