@@ -7,8 +7,9 @@ use std::ffi::OsString;
 use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use tauri::api::dialog::blocking::FileDialogBuilder;
-use tauri::regex::Regex;
+use regex::Regex;
+use tauri::AppHandle;
+use tauri_plugin_dialog::DialogExt;
 
 mod error;
 mod hash_function;
@@ -32,15 +33,22 @@ fn version() -> String {
 }
 
 #[tauri::command]
-async fn pick_file() -> Option<PathBuf> {
-    FileDialogBuilder::new().pick_file()
+async fn pick_file(app: AppHandle) -> Option<PathBuf> {
+    match app.dialog().file().blocking_pick_file() {
+        Some(file_path) => {
+            file_path.as_path().map(|path| path.to_path_buf())
+        },
+        None => None,
+    }
 }
 
 #[tauri::command]
-async fn pick_digest_file() -> Option<PathBuf> {
-    FileDialogBuilder::new()
-        .set_title("Open digest file")
-        .pick_file()
+async fn pick_digest_file(app: AppHandle) -> Option<PathBuf> {
+    match app.dialog().file().set_title("Open digest file").blocking_pick_file() {
+        Some(file_path) => {
+            file_path.as_path().map(|path| path.to_path_buf())        },
+        None => None,
+    }
 }
 
 #[tauri::command]
@@ -61,6 +69,7 @@ async fn parse_digest_file(digest_file: PathBuf) -> Result<DigestFileParts, erro
 
 #[tauri::command]
 async fn save_digest_file(
+    app: AppHandle,
     digested_file: PathBuf,
     hash_function: HashFunction,
     digest: &str,
@@ -77,35 +86,42 @@ async fn save_digest_file(
         _ => format!("{}", hash_function),
     };
     file_name.set_extension(&extension);
-    if let Some(digest_file) = FileDialogBuilder::new()
+    match app.dialog()
+        .file()
         .set_directory(directory)
         .set_file_name(file_name.to_string_lossy().as_ref())
-        .save_file()
-    {
-        let text = format!(
-            "{} ({}) = {}",
-            hash_function,
-            digested_file.file_name().unwrap().to_string_lossy(),
-            digest
-        );
-        let mut file = fs::File::create(&digest_file)?;
-        file.write_all(text.as_bytes())?;
-        Ok(Some(digest_file))
-    } else {
-        Ok(None) // User didn't pick a file
+        .blocking_save_file() {
+        Some(file_path) => {
+            if let Some(digest_file) = file_path.as_path() {
+                let text = format!(
+                    "{} ({}) = {}",
+                    hash_function,
+                    digested_file.file_name().unwrap().to_string_lossy(),
+                    digest
+                );
+                let mut file = fs::File::create(digest_file)?;
+                file.write_all(text.as_bytes())?;
+                Ok(Some(digest_file.to_path_buf()))
+            } else {
+                Ok(None)
+            }
+        }
+        None => Ok(None),
     }
 }
 
 #[tauri::command]
-async fn calculate_digest(
-    path_buf: PathBuf,
-    algorithm: String,
-) -> Result<String, error::Error> {
-    HashFunction::compute_digest(path_buf, HashFunction::try_from(algorithm).unwrap_or(HashFunction::MD5))
+async fn calculate_digest(path_buf: PathBuf, algorithm: String) -> Result<String, error::Error> {
+    HashFunction::compute_digest(
+        path_buf,
+        HashFunction::try_from(algorithm).unwrap_or(HashFunction::MD5),
+    )
 }
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             version,
             pick_file,

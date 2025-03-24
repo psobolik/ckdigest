@@ -1,0 +1,12 @@
+{
+  "identifier": "dialog-permissions",
+  "description": "Dialog permissions",
+  "local": true,
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "dialog:default",
+    "dialog:allow-message"
+  ]
+}

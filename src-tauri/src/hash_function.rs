@@ -5,10 +5,10 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
+use crate::error;
 use sha1::Sha1;
 use sha2::{Digest, Sha224, Sha256, Sha384, Sha512, Sha512_224, Sha512_256};
 use sha3::{Sha3_224, Sha3_256, Sha3_384, Sha3_512};
-use crate::error;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub enum HashFunction {
@@ -239,28 +239,28 @@ impl TryFrom<String> for HashFunction {
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
         match value.to_ascii_uppercase().as_str() {
-            "MD5" => Ok(HashFunction::MD5), // openssl and md5sum
+            "MD5" => Ok(HashFunction::MD5),   // openssl and md5sum
             "SHA1" => Ok(HashFunction::SHA1), // openssl and shasum
 
             "SHA2-224" => Ok(HashFunction::SHA224), // openssl
-            "SHA224" => Ok(HashFunction::SHA224), // shasum
+            "SHA224" => Ok(HashFunction::SHA224),   // shasum
 
             "SHA2-256" => Ok(HashFunction::SHA256), // openssl
-            "SHA256" => Ok(HashFunction::SHA256), // shasum
+            "SHA256" => Ok(HashFunction::SHA256),   // shasum
 
             "SHA2-384" => Ok(HashFunction::SHA384), // openssl
-            "SHA384" => Ok(HashFunction::SHA384), // shasum
+            "SHA384" => Ok(HashFunction::SHA384),   // shasum
 
             "SHA2-512" => Ok(HashFunction::SHA512), // openssl
-            "SHA512" => Ok(HashFunction::SHA512), // shasum
+            "SHA512" => Ok(HashFunction::SHA512),   // shasum
 
             "SHA2-512/224" => Ok(HashFunction::SHA512_224), // openssl
-            "SHA512/224" => Ok(HashFunction::SHA512_224), // shasum
-            "SHA512_224" => Ok(HashFunction::SHA512_224), // frontend
+            "SHA512/224" => Ok(HashFunction::SHA512_224),   // shasum
+            "SHA512_224" => Ok(HashFunction::SHA512_224),   // frontend
 
             "SHA2-512/256" => Ok(HashFunction::SHA512_256), // openssl
-            "SHA512/256" => Ok(HashFunction::SHA512_256), // shasum
-            "SHA512_256" => Ok(HashFunction::SHA512_256), // frontend
+            "SHA512/256" => Ok(HashFunction::SHA512_256),   // shasum
+            "SHA512_256" => Ok(HashFunction::SHA512_256),   // frontend
 
             "SHA3-224" => Ok(HashFunction::SHA3_224), // openssl
             "SHA3_224" => Ok(HashFunction::SHA3_224), // frontend
@@ -274,9 +274,10 @@ impl TryFrom<String> for HashFunction {
             "SHA3-512" => Ok(HashFunction::SHA3_512), // openssl
             "SHA3_512" => Ok(HashFunction::SHA3_512), // frontend
 
-
-
-            _ => Err(error::Error::new("HashFunction", format!("Invalid hash function: '{}'", value).as_str())),
+            _ => Err(error::Error::new(
+                "HashFunction",
+                format!("Invalid hash function: '{}'", value).as_str(),
+            )),
         }
     }
 }

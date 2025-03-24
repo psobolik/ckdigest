@@ -1,5 +1,5 @@
-use std::fmt::{Debug, Display, Formatter};
 use serde::Serialize;
+use std::fmt::{Debug, Display, Formatter};
 
 #[derive(Serialize)]
 pub struct Error {
@@ -12,7 +12,10 @@ impl Error {
         Error::new("Other", message)
     }
     pub fn new(source: &str, message: &str) -> Self {
-        Self { source: source.to_string(), message: message.to_string() }
+        Self {
+            source: source.to_string(),
+            message: message.to_string(),
+        }
     }
 }
 

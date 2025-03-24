@@ -1,7 +1,8 @@
-import {appWindow} from "@tauri-apps/api/window";
+import {getCurrentWebviewWindow} from "@tauri-apps/api/webviewWindow";
 import "./TitleBar.css"
 import React from "react";
 import Tauri from "./tauri.ts";
+const appWindow = getCurrentWebviewWindow()
 
 const TitleBar: React.FunctionComponent = () => {
     const [version, setVersion] = React.useState<string>("");
