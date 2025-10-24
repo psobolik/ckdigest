@@ -7,4 +7,4 @@ Copyright (c) 2024 Paul Sobolik
 License: [MIT](./LICENSE)
 
 ## Screenshot
-<img src="./src-image/screenshot.png" alt="screenshot">
+<img src="screenshot.png" alt="screenshot">
